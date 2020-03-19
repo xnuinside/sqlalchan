@@ -24,10 +24,11 @@ Became this:
         fullname: str
         nickname: str
 
-Examples in 'examples' dir.
-Main code in 'converter.py'
+Examples in **'examples'** dir.
+Main code in **'base_meta.py'**
 
-To run example: 
+
+###  How to run example: 
 
 1. git clone this repo to your local machine
 2. go to sources 
