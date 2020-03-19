@@ -1,7 +1,8 @@
 Toy-example how possible to customize SQLAlchemy Class definition and mapping your custom metaclass that inherit from SQLAlchemy DeclarativeMeta Class. 
 
-In example, we use simple class annotations to define tables, instead of huge
+In example, we use simple class annotations to define tables, instead of huge classical SQLAlchemy classes. 
 
+This: 
     from sqlalchemy import Column, Integer, String
 
     class User(Base):
@@ -12,6 +13,16 @@ In example, we use simple class annotations to define tables, instead of huge
          fullname = Column(String)
          nickname = Column(String)
 
+
+
+Became this: 
+
+    class User(Base):
+
+        id: int
+        name: str
+        fullname: str
+        nickname: str
 
 Examples in 'examples' dir.
 Main code in 'converter.py'
