@@ -1,7 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, String, Float, Integer
-
+from uuid import uuid4
 
 type_mapping = {
     str: String,
@@ -11,18 +11,9 @@ type_mapping = {
 }
 
 
-class BaseMeta(DeclarativeMeta):
-    def __init__(cls, classname, bases, dict_):
-        # add your changes/additions to classes before it go to SQLAlchemy parser
-        # you can make this way multiple table generations from one class, if needed and etc
-        cls.__tablename__ = cls.__name__.lower() + "s" if not cls.__name__.endswith(
-            'y') else cls.__name__.lower()[:-1] + "ies"
-        DeclarativeMeta.__init__(cls, classname, bases, dict_)
-
-
 def get_type(meta, column_name, _ann_type):
     """
-     convert Class annotation to SQLAlchemy Column object
+        convert Class annotation to SQLAlchemy Column object
     :param meta:
     :param column_name:
     :param _ann_type:
@@ -33,11 +24,28 @@ def get_type(meta, column_name, _ann_type):
             return relationship(_ann_type.__args__[0].__name__,
                                 order_by=f"{_ann_type.__args__[0].__name__}.id")
     elif not isinstance(_ann_type, meta):
-        return Column(column_name, type_mapping[_ann_type])
+        if column_name == 'id':
+            return Column(column_name, type_mapping[_ann_type], default=uuid4(), primary_key=True)
+        else:
+            return Column(column_name, type_mapping[_ann_type])
+
     else:
         # if we have a class in globals
         if _ann_type.__name__ in globals():
             return relationship(_ann_type.__name__, order_by=f"{_ann_type.__name__}.id", uselist=False)
+
+
+class BaseMeta(DeclarativeMeta):
+    def __init__(cls, classname, bases, dict_):
+        # add your changes/additions to classes before it go to SQLAlchemy parser
+        # you can make this way multiple table generations from one class, if needed and etc
+        special = {
+            'y': "ies",
+            's': 'es'
+        }
+        cls.__tablename__ = cls.__name__.lower() + "s" \
+            if not cls.__name__[-1] in special else cls.__name__.lower()[:-1] + special.get(cls.__name__[-1])
+        DeclarativeMeta.__init__(cls, classname, bases, dict_)
 
 
 class BaseMetaDefaultPrimary(BaseMeta):
@@ -49,10 +57,8 @@ class BaseMetaDefaultPrimary(BaseMeta):
         if '__annotations__' in cls.__dict__:
             cls.__annotations__['id'] = str
             for annotation in cls.__annotations__:
-                setattr(cls, annotation, get_type(BaseMetaDefaultPrimary, annotation,
-                                                  cls.__annotations__[annotation]))
-                if annotation == 'id':
-                    cls.__dict__[annotation].primary_key = True
+                setattr(cls, annotation, get_type(
+                    BaseMetaDefaultPrimary, annotation, cls.__annotations__[annotation]))
         BaseMeta.__init__(cls, classname, bases, dict_)
 
 

@@ -16,8 +16,18 @@ In example, we use simple class annotations to define tables, instead of huge
 Examples in 'examples' dir.
 Main code in 'converter.py'
 
-To check example: 
+To run example: 
 
-1. define your DB in example/db.py 
-2. add sqlalchan in your PYTHONPATH
-3. run python example/db.py
+1. git clone this repo to your local machine
+2. go to sources 
+3. run:
+    
+    docker-compose -f test_docker_compose.yml up postgres_test
+    
+4. wait until DB will success created
+    
+5. In new terminal window run: 
+    
+    docker-compose -f test_docker_compose.yml up main
+
+6. If you want to test insert - uncomment lines in 'db.py'

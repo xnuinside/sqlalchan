@@ -1,4 +1,4 @@
-from sqlalchan.converter import Model
+from sqlalchan.base_meta import Model
 from typing import List
 
 
