@@ -6,7 +6,7 @@ from sqlalchan.example.model import Model #, Country
 
 # define your DB here, I use PostgreSQL and this expect define of USER, PASSWORD and DB name in environment variables
 # DB_USER, DB_PASS and DB
-engine = create_engine(f"postgresql://{getenv('DB_USER')}:{getenv('DB_PASS')}@postgres_test/{getenv('DB')}")
+engine = create_engine(f"postgresql://{getenv('DB_USER')}:{getenv('DB_PASS')}@postgres_test:5433/{getenv('DB')}")
 
 # create all tables
 Model.metadata.create_all(engine)
