@@ -1,12 +1,16 @@
+from types import LambdaType
+
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, String, Float, Integer
+from sqlalchemy import Column, BigInteger, String, Float, Integer
 from uuid import uuid4
+from sqlalchan.example.set_of_types import bigint
 
 type_mapping = {
     str: String,
     float: Float,
-    int: Integer
+    int: Integer,
+    bigint: BigInteger,
     # add your type here
 }
 
@@ -24,8 +28,13 @@ def get_type(meta, column_name, _ann_type):
             return relationship(_ann_type.__args__[0].__name__,
                                 order_by=f"{_ann_type.__args__[0].__name__}.id")
     elif not isinstance(_ann_type, meta):
+        # check do we have already pre-create type or just class annotation
+        if isinstance(_ann_type, Column) or isinstance(_ann_type, LambdaType):
+            return _ann_type(column_name)
+
         if column_name == 'id':
-            return Column(column_name, type_mapping[_ann_type], default=uuid4(), primary_key=True)
+            return Column(column_name, type_mapping[_ann_type],
+                          default=uuid4(), primary_key=True)
         else:
             return Column(column_name, type_mapping[_ann_type])
 
