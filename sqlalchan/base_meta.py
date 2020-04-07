@@ -48,8 +48,9 @@ class BaseMeta(DeclarativeMeta):
     def __init__(cls, classname, bases, dict_):
         # add your changes/additions to classes before it go to SQLAlchemy parser
         # you can make this way multiple table generations from one class, if needed and etc
-        special = {'y': "ies", 's': 'es'}
-        cls.__tablename__ = f'{cls.__name__.lower()}{special.get(cls.__name__[-1], "s")}'
+        endings = {'y': lambda x: x[:-1] + "ies", 's': lambda x: x + 'es'}
+        base_name = cls.__name__.lower()
+        cls.__tablename__ = endings.get(base_name[-1], lambda x: x + 's')(base_name)
         DeclarativeMeta.__init__(cls, classname, bases, dict_)
 
 
